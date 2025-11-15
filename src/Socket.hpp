@@ -38,7 +38,8 @@ namespace web
         }
         void operator=(Socket&& iSocket) = delete;
 
-        HTTPRequest GetHTTPRequest();
+        std::optional<HTTPRequest> GetHTTPRequest();
+
         void SendHTTPResponse() {
             std::string response =
                 "HTTP/1.1 200 OK\r\n"

@@ -10,7 +10,7 @@ namespace web
     class HTTPReader {
     public:
         HTTPReader(Socket& iClientSocket) : _socket{ iClientSocket.GetRawSocket() } {
-            _HTTPRequest = ReadHTTPRequest();
+            //_HTTPRequest = ReadHTTPRequest();
         };
 
         void operator=(const SOCKET& s) = delete;
@@ -29,13 +29,16 @@ namespace web
             }
             return *this;
         }
-        HTTPRequest GetHTTPRequest() {
+
+        friend Socket;
+    private:
+        void ReadNewHttpRequest();
+
+        std::optional<HTTPRequest> GetHTTPRequest() {
             return _HTTPRequest;
         }
-
-    private:
-        HTTPRequest ReadHTTPRequest();
-        HTTPRequest _HTTPRequest;
+        std::optional<HTTPRequest> ReadHTTPRequest();
+        std::optional<HTTPRequest> _HTTPRequest;
         SOCKET _socket;
     };
 

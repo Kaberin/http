@@ -14,9 +14,7 @@ int main()
 
     while (true) {
         auto clientSocket = serverSocket.AcceptConnection();
-        auto req = clientSocket.value().GetHTTPRequest();
-        std::cout << req << '\n';
-        web::ClientHandler clientHandler(std::move(clientSocket.value()), req);
+        web::ClientHandler clientHandler(std::move(clientSocket.value()));
         std::thread clientThread{ std::move(clientHandler) };
         clientThread.detach();
     }

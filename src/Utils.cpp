@@ -6,7 +6,6 @@ namespace web
     namespace Utils
     {
         int StringToInteger(const std::string& iString) {
-            std::cout << "String: " << iString << '\n';
             return std::stoi(iString);
         }
 

@@ -32,9 +32,10 @@ namespace web
         return std::nullopt;
     }
 
-    HTTPRequest Socket::GetHTTPRequest() {
+    std::optional<HTTPRequest> Socket::GetHTTPRequest() {
         if (_socketType == SocketType::Client) {
             HTTPReader reader(*this);
+            reader.ReadNewHttpRequest();
             return reader.GetHTTPRequest();
         }
         else {
