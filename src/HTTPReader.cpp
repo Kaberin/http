@@ -33,7 +33,7 @@ namespace web
             int remainingBytes = contentLength - bodyInBuffer.size();
 
             while (remainingBytes > 0) {
-                bytes = recv(_socket, buf, std::min(remainingBytes, static_cast<int>(sizeof(buf))), 0);
+                bytes = recv(_socket, buf, (std::min)(remainingBytes, static_cast<int>(sizeof(buf))), 0);
                 if (bytes <= 0) break;
                 bodyInBuffer.append(buf, bytes);
                 remainingBytes -= bytes;

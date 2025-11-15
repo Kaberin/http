@@ -2,10 +2,10 @@
 #include <iostream>
 #include <thread>
 
-#include "Utils.hpp"
-#include "Socket.hpp"
-#include "HTTPReader.hpp"
-#include "ClientHandler.hpp"
+#include "src/Utils.hpp"
+#include "src/Socket.hpp"
+#include "src/HTTPReader.hpp"
+#include "src/ClientHandler.hpp"
 int main()
 {
     std::cout << "Server is running!\n";
@@ -20,7 +20,5 @@ int main()
         std::thread clientThread{ std::move(clientHandler) };
         clientThread.detach();
     }
-
-    //std::cout << req << '\n';
     return 0;
 }

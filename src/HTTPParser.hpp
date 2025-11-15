@@ -5,7 +5,7 @@
 #include <map>
 #include <optional>
 #include <sstream>
-#include "libs/magic_enum/magic_enum.hpp"
+#include "../libs/magic_enum/magic_enum.hpp"
 #include "WebTypes.hpp"
 
 namespace web

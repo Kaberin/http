@@ -2,7 +2,7 @@ all: server run
 
 server:
 	@echo Building server...
-	@g++ .\server.cpp .\HTTPparser.cpp .\HTTPReader.cpp .\Utils.cpp .\Socket.cpp .\ClientHandler.cpp -lws2_32 -o ./build/server.exe
+	@g++ .\server.cpp .\src\HTTPparser.cpp .\src\HTTPReader.cpp .\src\Utils.cpp .\src\Socket.cpp .\src\ClientHandler.cpp -lws2_32 -o ./build/server.exe
 
 run:
 	@echo Running server...
