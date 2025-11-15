@@ -9,7 +9,9 @@
 int main()
 {
     std::cout << "Server is running!\n";
+#ifdef _WIN32
     web::WSAInit init;
+#endif
     web::Socket serverSocket(8080);
 
     while (true) {

@@ -5,22 +5,30 @@ namespace web
 {
     Socket::Socket(int iServerPort, int backlog) {
         _socketType = SocketType::Server;
-        SOCKADDR_IN addr;
+        sockaddr_in addr;
+#ifdef _WIN32
         addr.sin_addr.S_un.S_addr = INADDR_ANY;
+#else
+        addr.sin_addr.s_addr = INADDR_ANY;
+#endif
         addr.sin_port = htons(iServerPort);
         addr.sin_family = AF_INET;
         _socket = socket(AF_INET, SOCK_STREAM, 0);
-        bind(_socket, reinterpret_cast<SOCKADDR*>(&addr), sizeof(addr));
+        bind(_socket, reinterpret_cast<sockaddr*>(&addr), sizeof(addr));
         listen(_socket, backlog);
     }
 
     Socket::~Socket() {
         if (_socket != INVALID_SOCKET) {
+#ifdef _WIN32
             closesocket(_socket);
+#else
+            close(_socket);
+#endif
         }
     }
 
-    const SOCKET& Socket::GetRawSocket() {
+    const socket_t& Socket::GetRawSocket() {
         return _socket;
     }
 
