@@ -1,21 +1,22 @@
 //HTTPRequest.cpp
-#include "HTTPRequest.hpp"
+#include "HTTPParser.hpp"
 
 #include <sstream>
-#include "libs/nlohmann/json.hpp"
+#include "Utils.hpp"
 
+#include "libs/nlohmann/json.hpp"
 namespace MyHTTP
 {
-    std::optional<HTTP::HTTPRequest> HTTP::ParseHTTPRequest(const std::string& iRawHttp)
+    void HTTPParser::ParseHTTPRequestUntilBody()
     {
-        if (iRawHttp.empty()) {
-            return std::nullopt;
+        if (_rawString.empty()) {
+            return;
         }
         HTTPRequest request;
-        std::stringstream HTTPStream{ iRawHttp };
+        std::stringstream HTTPStream{ _rawString };
         std::string startLine;
         if (!std::getline(HTTPStream, startLine)) {
-            return std::nullopt;
+            return;
         }
         if (!startLine.empty() && startLine.back() == '\r') {
             startLine.pop_back();
@@ -27,10 +28,11 @@ namespace MyHTTP
         request._path = path;
         request._version = version;
         request._headers = ParseHTTPHeaders(HTTPStream);
-        return request;
+        _request = request;
     }
 
-    std::map<std::string, std::string> HTTP::ParseHTTPHeaders(std::stringstream& iStream) {
+    std::map<std::string, std::string> HTTPParser::ParseHTTPHeaders(std::stringstream& iStream)
+    {
         std::map<std::string, std::string> headers;
         std::string line;
 
@@ -56,24 +58,5 @@ namespace MyHTTP
         }
 
         return headers;
-    }
-
-    std::ostream& operator<<(std::ostream& os, const HTTP::HTTPRequest& req)
-    {
-        std::string method{ magic_enum::enum_name(req._method) };
-        os << "Method: " << method << '\n'
-            << "Path: " << req._path << '\n'
-            << "Version: " << req._version << '\n'
-            << "Headers" << req._headers << '\n';
-        return os;
-    }
-
-    std::ostream& operator<<(std::ostream& os, const std::map<std::string, std::string>& map) {
-        os << " {\n";
-        for (const auto& [key, value] : map) {
-            os << '\t' << key << ": " << value << '\n';
-        }
-        os << "}";
-        return os;
     }
 }

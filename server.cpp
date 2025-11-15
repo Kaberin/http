@@ -1,29 +1,29 @@
 //Server.cpp
 #include <iostream>
-#include "HTTPRequest.hpp"
-
+#include "HTTPReader.hpp"
+#include "Utils.hpp"
 
 int main() {
-    // std::string request{
-    //                     "GET /products?id=123&sort=asc HTTP/1.1\r\n"
-    //                     "Host: example.com\r\n"
-    //                     "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)\r\n"
-    //                     "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\r\n"
-    //                     "Accept-Language: en-US,en;q=0.5\r\n"
-    //                     "Accept-Encoding: gzip, deflate\r\n"
-    //                     "Connection: keep-alive\r\n"
-    //                     "Upgrade-Insecure-Requests: 1\r\n"
-    // };
-    std::string rawHttp =
-        "GET /products?id=123 HTTP/1.1\r\n"
-        "Host: example.com\r\n"
-        "User-Agent: TestClient/1.0\r\n"
-        "Accept: text/html\r\n"
-        "Connection: close\r\n"
-        "\r\n";
-    //std::cout << rawHttp << "\n\n\n";
-    MyHTTP::HTTP http(rawHttp);
-    std::cout << http.GetRequest() << '\n';
+    WSADATA wsaData;
+    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
+        return 1;
+    }
+
+    SOCKADDR_IN addr;
+    addr.sin_addr.S_un.S_addr = INADDR_ANY;
+    addr.sin_port = htons(8080);
+    addr.sin_family = AF_INET;
+
+    SOCKET serverSocket = socket(AF_INET, SOCK_STREAM, 0);
+    bind(serverSocket, reinterpret_cast<SOCKADDR*>(&addr), sizeof(addr));
+    listen(serverSocket, SOMAXCONN);
+    auto clientSocket = accept(serverSocket, nullptr, nullptr);
+    MyHTTP::HTTPReader reader(clientSocket);
+    auto req = reader.GetHTTPRequest();
+
+    // MyHTTP::HTTPParser httpParser(rawHttp);
+    // auto parsedRequest = httpParser.GetRequest().has_value() ? httpParser.GetRequest().value() : MyHTTP::HTTPParser::HTTPRequest{};
+    std::cout << req << '\n';
 
     return 0;
 }
