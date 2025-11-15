@@ -10,16 +10,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
       
-      - name: Create Build directory
-        run: mkdir build
-
       - name: Run cmake
         run: |
+            mkdir build
             cd build
             cmake ../
-
-      - name: Build cmake
-        run: cmake --build . --config RelWithDebInfo
+            cmake --build . --config RelWithDebInfo
 
   build-windows:
     runs-on: windows-latest
@@ -28,15 +24,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
       
-      - name: Create Build directory
-        run: mkdir build
-
       - name: Run cmake
         run: |
+            mkdir build
             cd build
             cmake ../
-
-      - name: Build cmake
-        run: cmake --build . --config RelWithDebInfo
+            cmake --build . --config RelWithDebInfo
        
      
