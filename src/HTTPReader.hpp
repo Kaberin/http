@@ -57,8 +57,8 @@ namespace web
         }
 
     private:
-        HTTPRequest ReadHTTPRequest();
-        HTTPRequest _HTTPRequest;
+        std::optional<HTTPRequest> ReadHTTPRequest();
+        std::optional<HTTPRequest> _HTTPRequest;
         socket_t _socket;
     };
 
