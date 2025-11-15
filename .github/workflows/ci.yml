@@ -1,0 +1,18 @@
+name: build
+
+on: push
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install build tools
+        run: sudo apt-get update && sudo apt-get install -y build-essential
+      
+      - name: Build project
+        run: make server_lin
+     
