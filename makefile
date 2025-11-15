@@ -9,6 +9,10 @@ server_lin:
 	@echo Building server...
 	@g++ ./server.cpp ./src/HTTPParser.cpp ./src/HTTPReader.cpp ./src/Utils.cpp ./src/Socket.cpp ./src/ClientHandler.cpp -o ./build/server.a
 
+server_lin_ci:
+	@echo Building server...
+	@g++ ./server.cpp ./src/HTTPParser.cpp ./src/HTTPReader.cpp ./src/Utils.cpp ./src/Socket.cpp ./src/ClientHandler.cpp
+
 run_win:
 	@echo Running server...
 	@./build/server.exe
