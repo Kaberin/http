@@ -2,8 +2,8 @@
 #include "HTTPReader.hpp"
 #include "Utils.hpp"
 #include <cmath>
-namespace MyHTTP {
-
+namespace web
+{
     HTTPRequest HTTPReader::ReadHTTPRequest()
     {
         std::string iRawRequest;

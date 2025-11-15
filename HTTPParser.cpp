@@ -5,7 +5,7 @@
 #include "Utils.hpp"
 
 #include "libs/nlohmann/json.hpp"
-namespace MyHTTP
+namespace web
 {
     void HTTPParser::ParseHTTPRequestUntilBody()
     {
