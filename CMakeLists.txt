@@ -10,14 +10,16 @@ add_executable(WebServer
     ./src/HTTPParser.cpp
     ./src/ClientHandler.cpp
     ./src/Utils.cpp
-    # остальные .cpp
 )
+
+set_target_properties(WebServer PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}")
 
 add_executable(Tests
     ./tests/main.cpp
 )
 
-# Линкуем WinSock
-target_link_libraries(WebServer
-    ws2_32
-)
+if(WIN32)
+    target_link_libraries(WebServer
+        ws2_32
+    )
+endif()
