@@ -3,7 +3,8 @@
 
 #include "HTTPParser.hpp"
 
-namespace MyHTTP {
+namespace web
+{
     namespace Utils {
         int StringToInteger(const std::string& iString);
         int IsInteger(const std::string& iString);

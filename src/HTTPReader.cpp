@@ -2,8 +2,8 @@
 #include "HTTPReader.hpp"
 #include "Utils.hpp"
 #include <cmath>
-namespace MyHTTP {
-
+namespace web
+{
     HTTPRequest HTTPReader::ReadHTTPRequest()
     {
         std::string iRawRequest;
@@ -33,7 +33,7 @@ namespace MyHTTP {
             int remainingBytes = contentLength - bodyInBuffer.size();
 
             while (remainingBytes > 0) {
-                bytes = recv(_socket, buf, std::min(remainingBytes, static_cast<int>(sizeof(buf))), 0);
+                bytes = recv(_socket, buf, (std::min)(remainingBytes, static_cast<int>(sizeof(buf))), 0);
                 if (bytes <= 0) break;
                 bodyInBuffer.append(buf, bytes);
                 remainingBytes -= bytes;

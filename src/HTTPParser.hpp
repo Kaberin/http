@@ -5,30 +5,12 @@
 #include <map>
 #include <optional>
 #include <sstream>
-#include "libs/magic_enum/magic_enum.hpp"
+#include "../libs/magic_enum/magic_enum.hpp"
+#include "WebTypes.hpp"
 
-
-namespace MyHTTP
+namespace web
 {
     class HTTPReader;
-
-    enum class HTTPMethod {
-        GET,
-        POST,
-        EMPTY
-    };
-    enum class HTTPConnection {
-        Close,
-        KeepAlive
-    };
-
-    struct HTTPRequest {
-        HTTPMethod _method;
-        std::string _path;
-        std::string _version;
-        std::map<std::string, std::string> _headers;
-        std::string _body;
-    };
     //Class that parses http request string
     //You can get parsed http by GetRequest() which returns std::optional<HTTPRequest>
     class HTTPParser {

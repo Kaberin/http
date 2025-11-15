@@ -1,8 +1,10 @@
 #include "Utils.hpp"
-#include "libs/nlohmann/json.hpp"
+#include "../libs/nlohmann/json.hpp"
 #include <algorithm>
-namespace MyHTTP {
-    namespace Utils {
+namespace web
+{
+    namespace Utils
+    {
         int StringToInteger(const std::string& iString) {
             std::cout << "String: " << iString << '\n';
             return std::stoi(iString);

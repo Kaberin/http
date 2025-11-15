@@ -1,14 +1,15 @@
 //HTTPReader.hpp
 #pragma once
 #include <string>
-#include "HTTPParser.hpp"
 #include "winsock2.h"
-namespace MyHTTP {
-
+#include "Socket.hpp"
+#include "HTTPParser.hpp"
+namespace web
+{
     //Reads HTTP Request from socket. Owns socket and closes it by himself
     class HTTPReader {
     public:
-        HTTPReader(SOCKET iClientSocket) : _socket{ iClientSocket } {
+        HTTPReader(Socket& iClientSocket) : _socket{ iClientSocket.GetRawSocket() } {
             _HTTPRequest = ReadHTTPRequest();
         };
 
@@ -27,12 +28,6 @@ namespace MyHTTP {
                 }
             }
             return *this;
-        }
-
-        ~HTTPReader() {
-            if (_socket != INVALID_SOCKET) {
-                closesocket(_socket);
-            }
         }
         HTTPRequest GetHTTPRequest() {
             return _HTTPRequest;
