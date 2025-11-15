@@ -1,12 +1,26 @@
 #pragma once
-#include <winsock2.h>
+#ifdef _WIN32
+
+#include "winsock2.h"
+using socket_t = SOCKET;
+
+#else
+
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+using socket_t = int;
+#define INVALID_SOCKET -1
+
+#endif
 #include <iostream>
 #include <optional>
 #include "WebTypes.hpp"
 
 namespace web
 {
-
+#ifdef _WIN32
     class WSAInit {
     public:
         WSAInit() {
@@ -24,10 +38,10 @@ namespace web
     private:
         WSADATA _wsaData;
     };
-
+#endif
     class Socket {
     public:
-        Socket(SOCKET iRawSocket, SocketType iSocketType) : _socket{ iRawSocket }, _socketType{ iSocketType } {}
+        Socket(socket_t iRawSocket, SocketType iSocketType) : _socket{ iRawSocket }, _socketType{ iSocketType } {}
         Socket(int iServerPort, int backlog = SOMAXCONN);
         std::optional<Socket> AcceptConnection();
         Socket(Socket& iSocket) = delete;
@@ -50,10 +64,10 @@ namespace web
                 "Hello world!";
             send(_socket, response.c_str(), response.size(), 0);
         }
-        const SOCKET& GetRawSocket();
+        const socket_t& GetRawSocket();
         ~Socket();
     private:
-        SOCKET _socket;
+        socket_t _socket;
         SocketType _socketType;
     };
 
