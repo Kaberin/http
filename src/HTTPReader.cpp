@@ -4,7 +4,7 @@
 #include <cmath>
 namespace web
 {
-    HTTPRequest HTTPReader::ReadHTTPRequest()
+    std::optional<HTTPRequest> HTTPReader::ReadHTTPRequest()
     {
         std::string iRawRequest;
 
@@ -16,6 +16,11 @@ namespace web
                 break;
             }
         }
+
+        if (bytes <= 0) {
+            return std::nullopt;
+        }
+
         HTTPParser reader(iRawRequest);
         reader.ParseHTTPRequestUntilBody();
         auto parsedrequest = reader.GetRequest();
@@ -42,5 +47,9 @@ namespace web
             resultRequest._body = bodyInBuffer;
         }
         return resultRequest;
+    }
+
+    void HTTPReader::ReadNewHttpRequest() {
+        _HTTPRequest = ReadHTTPRequest();
     }
 }

@@ -1,7 +1,21 @@
 //HTTPReader.hpp
 #pragma once
 #include <string>
+#ifdef _WIN32
+
 #include "winsock2.h"
+using socket_t = SOCKET;
+
+#else
+
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+using socket_t = int;
+
+#endif
+
 #include "Socket.hpp"
 #include "HTTPParser.hpp"
 namespace web
@@ -10,10 +24,10 @@ namespace web
     class HTTPReader {
     public:
         HTTPReader(Socket& iClientSocket) : _socket{ iClientSocket.GetRawSocket() } {
-            _HTTPRequest = ReadHTTPRequest();
+            //_HTTPRequest = ReadHTTPRequest();
         };
 
-        void operator=(const SOCKET& s) = delete;
+        void operator=(const socket_t& s) = delete;
 
         HTTPReader(HTTPReader&& other) : _socket(other._socket) {
             other._socket = INVALID_SOCKET;
@@ -22,21 +36,30 @@ namespace web
         HTTPReader& operator=(HTTPReader&& other) {
             if (this != &other) {
                 if (_socket != INVALID_SOCKET) {
+#ifdef _WIN32
                     closesocket(_socket);
+#else
+                    close(_socket);
+#endif
                     _socket = other._socket;
                     other._socket = INVALID_SOCKET;
                 }
             }
             return *this;
         }
-        HTTPRequest GetHTTPRequest() {
+
+        friend Socket;
+    private:
+        void ReadNewHttpRequest();
+
+        std::optional<HTTPRequest> GetHTTPRequest() {
             return _HTTPRequest;
         }
 
     private:
-        HTTPRequest ReadHTTPRequest();
-        HTTPRequest _HTTPRequest;
-        SOCKET _socket;
+        std::optional<HTTPRequest> ReadHTTPRequest();
+        std::optional<HTTPRequest> _HTTPRequest;
+        socket_t _socket;
     };
 
 }
