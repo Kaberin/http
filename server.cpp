@@ -14,19 +14,19 @@ int main()
 #ifdef _WIN32
     web::WSAInit init;
 #endif
-     web::Socket serverSocket(8080, web::SocketType::Server);
+    web::Socket serverSocket(8080, web::SocketType::Server, SOMAXCONN);
 
-     while (true) {
-         auto clientSocketOpt = serverSocket.AcceptConnection();
-         if (!clientSocketOpt) {
-             continue;
-         }
+    while (true) {
+        auto clientSocketOpt = serverSocket.AcceptConnection();
+        if (!clientSocketOpt) {
+            continue;
+        }
 
-         std::thread clientThread([socket = std::move(*clientSocketOpt)]() mutable {
-             web::ClientHandler handler(std::move(socket));
-             handler();
-             });
-         clientThread.detach();
-     }
+        std::thread clientThread([socket = std::move(*clientSocketOpt)]() mutable {
+            web::ClientHandler handler(std::move(socket));
+            handler();
+            });
+        clientThread.detach();
+    }
     return 0;
 }

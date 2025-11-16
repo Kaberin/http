@@ -44,7 +44,7 @@ namespace web
         Socket(socket_t iRawSocket, SocketType iSocketType) : _socket{ iRawSocket }, _socketType{ iSocketType } {
             std::cout << "Client socket constructor...\n";
         }
-        Socket(int iServerPort, SocketType iSocketType, int backlog = SOMAXCONN);
+        Socket(int iServerPort, SocketType iSocketType, int backlog);
         std::optional<Socket> AcceptConnection();
         Socket(Socket& iSocket) = delete;
         Socket& operator=(Socket& iSocket) = delete;
