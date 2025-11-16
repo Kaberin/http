@@ -10,6 +10,18 @@
 
 int main()
 {
+    //web::HTTPResponse response{
+    //    web::HTTPVersion::HTTP1_1,
+    //    web::StatusCode::Ok,
+    //    {
+    //        {"Server", "San-Francisco"},
+    //        {"Content-Type", "text/plain"},
+    //        {"Connection", "keep-alive"}
+    //    },
+    //    "Hello world!"
+    //};
+
+    //std::cout << response.ToString() << '\n';
     std::cout << "Server is running!\n";
 #ifdef _WIN32
     web::WSAInit init;

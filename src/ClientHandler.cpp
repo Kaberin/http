@@ -15,12 +15,36 @@ namespace web {
         int counter = 0;
         while (true) {
             auto requestOpt = _socket.GetHTTPRequest();
-            //std::cout << "Infinity cycle...\n";
             if (requestOpt.has_value()) {
                 auto request = requestOpt.value();
-                _socket.SendHTTPResponse();
                 std::cout << "Current HTTP Request: \n" << request << "\n\n";
-                if (request._headers["connection"] == "close") {
+                if (!request._body.empty()) {
+                    HTTPResponse response {
+                        HTTPVersion::HTTP1_1,
+                        StatusCode::Ok,
+                        {
+                            {"Connection", "keep-alive"},
+                            {"Content-Type", "text/plain"},
+                            {"chupapimunanya", "baza" }
+                        },
+                        request._body
+                    };
+                     _socket.Send(response.ToString());
+                }
+                else {
+                   HTTPResponse response{
+                   HTTPVersion::HTTP1_1,
+                   StatusCode::Ok,
+                   {
+                       {"Connection", "keep-alive"},
+                       {"Content-Type", "text/plain"},
+                       {"chupapimunanya", "baza" }
+                   },
+                   "No body..."
+                    };
+                    _socket.Send(response.ToString());
+                }
+                if (request._headers["connection"] == "close" || request._headers["Connection"] == "close") {
                     std::cout << "Conection is closed by client.\n";
                     break;
                 }

@@ -49,7 +49,7 @@ namespace web
         Socket(Socket& iSocket) = delete;
         Socket& operator=(Socket& iSocket) = delete;
         Socket(Socket&& iSocket) : _socket{ iSocket._socket }, _socketType{ iSocket._socketType } {
-            //std::cout << "Move socket constructor...\n";
+            //std::cout << "Move socket constructor...\n";e
             iSocket._socket = INVALID_SOCKET;
         }
         Socket& operator=(Socket&& iSocket) {
@@ -72,17 +72,7 @@ namespace web
         };
 
         std::optional<HTTPRequest> GetHTTPRequest();
-
-        void SendHTTPResponse() {
-            std::string response =
-                "HTTP/1.1 200 OK\r\n"
-                "Content-Type: text/plain\r\n"
-                "Content-Length: 12\r\n"
-                "Connection: keep-alive\r\n"
-                "\r\n"
-                "Hello world!";
-            send(_socket, response.c_str(), response.size(), 0);
-        }
+        bool Send(std::string iString) const;
         std::string Read(int bytes) const;
         std::string Read(int chunkSize, std::string& iStopMark) const;
         socket_t GetRawSocket() const;

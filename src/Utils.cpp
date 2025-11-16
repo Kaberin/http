@@ -28,9 +28,16 @@ namespace web
             << "Version: " << req._version << '\n'
             << "Headers" << req._headers << '\n';
         using nlohmann::json;
+      
         if (!req._body.empty()) {
-            json j = json::parse(req._body);
-            os << "Body:\n" << j.dump(4) << '\n';
+            try {
+                json j = json::parse(req._body);
+                os << "Body:\n" << j.dump(4) << '\n';
+
+            }
+            catch(const json::parse_error& e){
+                std::cout << e.what() << '\n';
+            }
         }
 
         return os;

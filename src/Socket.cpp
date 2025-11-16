@@ -70,6 +70,20 @@ namespace web
         return result;
     }
 
+    bool Socket::Send(std::string iString) const {
+        int bytesToSend = iString.size();
+        int sent = 0;
+        auto data = iString.c_str();
+        while (bytesToSend > 0) {
+            int res = send(_socket, data + sent, bytesToSend - sent, 0);
+            if (res <= 0) {
+                return false;
+            }
+            sent += res;
+        }
+        return true;
+    }
+
     std::optional<Socket> Socket::AcceptConnection() {
         if (_socketType == SocketType::Server) {
             socket_t rawSocket = accept(_socket, nullptr, nullptr);
