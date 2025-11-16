@@ -4,23 +4,14 @@
 #include <cmath>
 namespace web
 {
-    std::optional<HTTPRequest> HTTPReader::ReadHTTPRequest()
+    std::optional<HTTPRequest> HTTPReader::ReadHTTPRequest(const Socket& iSocket)
     {
         std::string iRawRequest;
-
-        char buf[1024];
-        int bytes = 0;
-        while ((bytes = recv(_socket, buf, sizeof(buf), 0)) > 0) {
-            iRawRequest.append(buf, bytes);
-            if (iRawRequest.find("\r\n\r\n") != std::string::npos) {
-                break;
-            }
-        }
-
-        if (bytes <= 0) {
-            return std::nullopt;
-        }
-
+        int bytesChunk = 1024;
+        std::string stop = "\r\n\r\n";
+        std::string line = iSocket.Read(bytesChunk, stop);
+        if (line.empty()) return std::nullopt;
+        iRawRequest += line;
         HTTPParser reader(iRawRequest);
         reader.ParseHTTPRequestUntilBody();
         auto parsedrequest = reader.GetRequest();
@@ -32,24 +23,14 @@ namespace web
             bool isContentLength = request._headers.find(contentLengthStr) != request._headers.end();
             bool isLengthANumber = isContentLength ? Utils::IsInteger(request._headers[contentLengthStr]) : false;
             int contentLength = isLengthANumber ? Utils::StringToInteger(request._headers[contentLengthStr]) : 0;
-
             auto headerEnd = iRawRequest.find("\r\n\r\n") + 4;
             std::string bodyInBuffer = iRawRequest.substr(headerEnd);
             int remainingBytes = contentLength - bodyInBuffer.size();
-
-            while (remainingBytes > 0) {
-                bytes = recv(_socket, buf, (std::min)(remainingBytes, static_cast<int>(sizeof(buf))), 0);
-                if (bytes <= 0) break;
-                bodyInBuffer.append(buf, bytes);
-                remainingBytes -= bytes;
-            }
+            bodyInBuffer += iSocket.Read(remainingBytes);
             resultRequest = request;
             resultRequest._body = bodyInBuffer;
+            return resultRequest;
         }
-        return resultRequest;
-    }
-
-    void HTTPReader::ReadNewHttpRequest() {
-        _HTTPRequest = ReadHTTPRequest();
+        return std::nullopt;
     }
 }

@@ -23,43 +23,7 @@ namespace web
     //Reads HTTP Request from socket. Owns socket and closes it by himself
     class HTTPReader {
     public:
-        HTTPReader(Socket& iClientSocket) : _socket{ iClientSocket.GetRawSocket() } {
-            //_HTTPRequest = ReadHTTPRequest();
-        };
-
-        void operator=(const socket_t& s) = delete;
-
-        HTTPReader(HTTPReader&& other) : _socket(other._socket) {
-            other._socket = INVALID_SOCKET;
-        }
-
-        HTTPReader& operator=(HTTPReader&& other) {
-            if (this != &other) {
-                if (_socket != INVALID_SOCKET) {
-#ifdef _WIN32
-                    closesocket(_socket);
-#else
-                    close(_socket);
-#endif
-                    _socket = other._socket;
-                    other._socket = INVALID_SOCKET;
-                }
-            }
-            return *this;
-        }
-
-        friend Socket;
-    private:
-        void ReadNewHttpRequest();
-
-        std::optional<HTTPRequest> GetHTTPRequest() {
-            return _HTTPRequest;
-        }
-
-    private:
-        std::optional<HTTPRequest> ReadHTTPRequest();
-        std::optional<HTTPRequest> _HTTPRequest;
-        socket_t _socket;
+        std::optional<HTTPRequest> ReadHTTPRequest(const Socket& iSocket);
     };
 
 }

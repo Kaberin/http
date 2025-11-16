@@ -3,7 +3,8 @@
 #include "Utils.hpp"
 namespace web
 {
-    Socket::Socket(int iServerPort, int backlog) {
+    Socket::Socket(int iServerPort, SocketType iSocketType, int backlog) {
+        std::cout << "Server socket constructor...\n";
         _socketType = SocketType::Server;
         sockaddr_in addr;
 #ifdef _WIN32
@@ -20,6 +21,7 @@ namespace web
 
     Socket::~Socket() {
         if (_socket != INVALID_SOCKET) {
+            std::cout << "Socket::~Socket(): Closing socket...\n";
 #ifdef _WIN32
             closesocket(_socket);
 #else
@@ -28,27 +30,65 @@ namespace web
         }
     }
 
-    const socket_t& Socket::GetRawSocket() {
+    socket_t Socket::GetRawSocket() const
+    {
         return _socket;
+    }
+
+    std::string Socket::Read(int bytes) const {
+        int bytesToRead = bytes;
+        char buf[1024];
+
+        int readBytes = 0;
+        std::string result;
+        while (bytesToRead > 0) {
+            readBytes = recv(_socket, buf, (std::min)(bytesToRead, static_cast<int>(sizeof(buf))), 0);
+            if (readBytes <= 0) break;
+            result.append(buf, readBytes);
+            bytesToRead -= readBytes;
+        }
+        return result;
+    }
+
+    std::string Socket::Read(int chunkSize, std::string& iStopMark) const
+    {
+        int bytesToRead = chunkSize;
+        char buf[1024];
+
+        int readBytes = 0;
+        std::string result;
+        while (bytesToRead > 0) {
+            readBytes = recv(_socket, buf, (std::min)(bytesToRead, static_cast<int>(sizeof(buf))), 0);
+            if (readBytes <= 0) break; 
+            result.append(buf, readBytes);
+            if (result.find(iStopMark) != std::string::npos) {
+                bytesToRead = 0;
+                continue;
+            }
+            bytesToRead -= readBytes;
+        }
+        return result;
     }
 
     std::optional<Socket> Socket::AcceptConnection() {
         if (_socketType == SocketType::Server) {
-            Socket clientSocket(accept(_socket, nullptr, nullptr), SocketType::Client);
-            return clientSocket;
+            socket_t rawSocket = accept(_socket, nullptr, nullptr);
+            std::cout << "Accepted socket: " << rawSocket << '\n';
+            if (rawSocket == INVALID_SOCKET) {
+                return std::nullopt;
+            }
+            return std::optional<Socket>(Socket(rawSocket, SocketType::Client));
         }
         return std::nullopt;
     }
 
     std::optional<HTTPRequest> Socket::GetHTTPRequest() {
         if (_socketType == SocketType::Client) {
-            HTTPReader reader(*this);
-            reader.ReadNewHttpRequest();
-            return reader.GetHTTPRequest();
+            HTTPReader reader;
+            return reader.ReadHTTPRequest(*this);
         }
         else {
             throw std::runtime_error{ "Only client sockets can get http requests!" };
         }
-
     }
 }

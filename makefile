@@ -21,6 +21,11 @@ run_lin:
 	@echo Running server...
 	@./build/server.a
 
+cmake: 
+	cd build 
+	cmake -S . -B ./build 
+	cmake --build ./build --config RelWithDebInfo
+
 clean:
 	@echo Cleaning build directory...
 	@rmdir /s /q build

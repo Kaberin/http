@@ -4,8 +4,8 @@
 namespace web {
     class ClientHandler {
     public:
-        ClientHandler(Socket&& iClientSocket) : _socket{ std::move(iClientSocket) } {
-            std::cout << "Client Handler constructor\n";
+        ClientHandler(Socket&& iClientSocket) : _socket{ std::move(iClientSocket) }
+        {
         }
 
         void operator()();

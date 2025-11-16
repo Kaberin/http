@@ -41,16 +41,35 @@ namespace web
 #endif
     class Socket {
     public:
-        Socket(socket_t iRawSocket, SocketType iSocketType) : _socket{ iRawSocket }, _socketType{ iSocketType } {}
-        Socket(int iServerPort, int backlog = SOMAXCONN);
+        Socket(socket_t iRawSocket, SocketType iSocketType) : _socket{ iRawSocket }, _socketType{ iSocketType } {
+            std::cout << "Client socket constructor...\n";
+        }
+        Socket(int iServerPort, SocketType iSocketType, int backlog = SOMAXCONN);
         std::optional<Socket> AcceptConnection();
         Socket(Socket& iSocket) = delete;
-        Socket(Socket&& iSocket) {
+        Socket& operator=(Socket& iSocket) = delete;
+        Socket(Socket&& iSocket) : _socket{ iSocket._socket }, _socketType{ iSocket._socketType } {
+            //std::cout << "Move socket constructor...\n";
+            iSocket._socket = INVALID_SOCKET;
+        }
+        Socket& operator=(Socket&& iSocket) {
+            std::cout << "Move assignment...\n";
+#ifdef _WIN32
+            if (_socket != INVALID_SOCKET)
+            {
+                closesocket(_socket);
+            }
+#else
+            if (_socket != INVALID_SOCKET)
+            {
+                close(_socket);
+            }
+#endif
             _socket = iSocket._socket;
             _socketType = iSocket._socketType;
             iSocket._socket = INVALID_SOCKET;
-        }
-        void operator=(Socket&& iSocket) = delete;
+            return *this;
+        };
 
         std::optional<HTTPRequest> GetHTTPRequest();
 
@@ -59,12 +78,14 @@ namespace web
                 "HTTP/1.1 200 OK\r\n"
                 "Content-Type: text/plain\r\n"
                 "Content-Length: 12\r\n"
-                "Connection: close\r\n"
+                "Connection: keep-alive\r\n"
                 "\r\n"
                 "Hello world!";
             send(_socket, response.c_str(), response.size(), 0);
         }
-        const socket_t& GetRawSocket();
+        std::string Read(int bytes) const;
+        std::string Read(int chunkSize, std::string& iStopMark) const;
+        socket_t GetRawSocket() const;
         ~Socket();
     private:
         socket_t _socket;

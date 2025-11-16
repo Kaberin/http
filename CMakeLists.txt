@@ -10,6 +10,12 @@ add_executable(WebServer
     ./src/HTTPParser.cpp
     ./src/ClientHandler.cpp
     ./src/Utils.cpp
+    ./src/Socket.hpp
+    ./src/HTTPReader.hpp
+    ./src/HTTPParser.hpp
+    ./src/ClientHandler.hpp
+    ./src/Utils.hpp
+    ./src/WebTypes.hpp
 )
 
 set_target_properties(WebServer PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}")

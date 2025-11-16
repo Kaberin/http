@@ -1,12 +1,13 @@
 #include "ClientHandler.hpp"
 #include <string>
 #include <chrono>
-
+#include <thread>
 #include "HTTPReader.hpp"
 #include "Utils.hpp"
 namespace web {
     void ClientHandler::operator()()
     {
+        std::cout << "Socket ID: " << _socket.GetRawSocket() << " in thread " << std::this_thread::get_id() << '\n';
         std::cout << "Client Handler start\n";
         auto start = std::chrono::steady_clock::now();
         auto lastPrint = start;
@@ -14,14 +15,19 @@ namespace web {
         int counter = 0;
         while (true) {
             auto requestOpt = _socket.GetHTTPRequest();
+            //std::cout << "Infinity cycle...\n";
             if (requestOpt.has_value()) {
                 auto request = requestOpt.value();
                 _socket.SendHTTPResponse();
-                std::cout << request << '\n';
-                if (request._headers["Connection"] == "close") {
+                std::cout << "Current HTTP Request: \n" << request << "\n\n";
+                if (request._headers["connection"] == "close") {
+                    std::cout << "Conection is closed by client.\n";
                     break;
                 }
             }
+            else {
+            }
         }
+        std::cout << "End of ClientHandler process.\n";
     }
 }
