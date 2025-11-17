@@ -2,6 +2,7 @@
 #include "HTTPReader.hpp"
 #include "Utils.hpp"
 #include <cmath>
+#include "Exceptions.hpp"
 namespace web
 {
     std::optional<HTTPRequest> HTTPReader::ReadHTTPRequest(const Socket& iSocket)
@@ -12,7 +13,7 @@ namespace web
         try {
             line = iSocket.Read(stop);
         }
-        catch (std::exception& e) {
+        catch (exceptions::HTTPException& e) {
             throw;
         }
         if (line.empty()) return std::nullopt;
@@ -34,7 +35,7 @@ namespace web
             try {
                 bodyInBuffer += iSocket.Read(remainingBytes);
             }
-            catch (std::exception& e) {
+            catch (exceptions::HTTPException& e) {
                 throw;
             }
             resultRequest = request;

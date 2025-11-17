@@ -8,10 +8,8 @@ namespace web {
         public:
             HTTPException(std::string iMessage) : _msg{ iMessage } {}
 
-            char const* what() const override 
-            {
-                return _msg.empty() ? "Unknown exception" : _msg.c_str();
-            }
+            const char* what() const noexcept override { return _msg.c_str(); }
+
         private:
             std::string _msg;
         };
