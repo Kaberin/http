@@ -10,6 +10,10 @@ add_library(srcLib
     ./ClientHandler.hpp
     ./Utils.hpp
     ./WebTypes.hpp
+    ./DefaulValues.hpp
+    ./Exceptions.cpp
+    ./Exceptions.hpp
+    ./MagicEnum.hpp
 )
 
 target_include_directories(srcLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

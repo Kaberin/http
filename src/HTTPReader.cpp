@@ -7,9 +7,14 @@ namespace web
     std::optional<HTTPRequest> HTTPReader::ReadHTTPRequest(const Socket& iSocket)
     {
         std::string iRawRequest;
-        int bytesChunk = 1024;
         std::string stop = "\r\n\r\n";
-        std::string line = iSocket.Read(bytesChunk, stop);
+        std::string line = "";
+        try {
+            line = iSocket.Read(stop);
+        }
+        catch (std::exception& e) {
+            throw;
+        }
         if (line.empty()) return std::nullopt;
         iRawRequest += line;
         HTTPParser reader(iRawRequest);
@@ -26,7 +31,12 @@ namespace web
             auto headerEnd = iRawRequest.find("\r\n\r\n") + 4;
             std::string bodyInBuffer = iRawRequest.substr(headerEnd);
             int remainingBytes = contentLength - bodyInBuffer.size();
-            bodyInBuffer += iSocket.Read(remainingBytes);
+            try {
+                bodyInBuffer += iSocket.Read(remainingBytes);
+            }
+            catch (std::exception& e) {
+                throw;
+            }
             resultRequest = request;
             resultRequest._body = bodyInBuffer;
             return resultRequest;

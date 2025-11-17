@@ -1,6 +1,8 @@
 #include "Socket.hpp"
 #include "HTTPReader.hpp"
 #include "Utils.hpp"
+#include "DefaulValues.hpp"
+#include "Exceptions.hpp"
 namespace web
 {
     Socket::Socket(int iServerPort, SocketType iSocketType, int backlog) {
@@ -43,29 +45,61 @@ namespace web
         std::string result;
         while (bytesToRead > 0) {
             readBytes = recv(_socket, buf, (std::min)(bytesToRead, static_cast<int>(sizeof(buf))), 0);
-            if (readBytes <= 0) break;
+            if (readBytes == 0) {
+                break;
+            }
+            if (readBytes < 0) {
+#ifdef _WIN32
+                auto err = WSAGetLastError();
+                if (err == WSAETIMEDOUT) {
+                    throw exceptions::Timeout();
+                }
+                throw exceptions::SocketError();
+#else
+                if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                    throw exceptions::Timeout();
+                }
+                throw exceptions::SocketError();
+#endif
+            }
             result.append(buf, readBytes);
             bytesToRead -= readBytes;
         }
         return result;
     }
 
-    std::string Socket::Read(int chunkSize, std::string& iStopMark) const
+    std::string Socket::Read(std::string& iStopMark) const
     {
-        int bytesToRead = chunkSize;
         char buf[1024];
-
         int readBytes = 0;
         std::string result;
-        while (bytesToRead > 0) {
-            readBytes = recv(_socket, buf, (std::min)(bytesToRead, static_cast<int>(sizeof(buf))), 0);
-            if (readBytes <= 0) break; 
-            result.append(buf, readBytes);
-            if (result.find(iStopMark) != std::string::npos) {
-                bytesToRead = 0;
-                continue;
+        while (true) {
+            readBytes = recv(_socket, buf, sizeof(buf), 0);
+
+            if (readBytes == 0) {
+                break;
             }
-            bytesToRead -= readBytes;
+
+            if (readBytes < 0) {
+#ifdef _WIN32
+                auto err = WSAGetLastError();
+                if (err == WSAETIMEDOUT) {
+                    throw exceptions::Timeout();
+                }
+                throw exceptions::SocketError();
+#else
+                if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                    throw exceptions::Timeout();
+                }
+                throw exceptions::SocketError();
+#endif
+            }
+
+            result.append(buf, readBytes);
+
+            if (result.find(iStopMark) != std::string::npos) {
+                break;
+            }
         }
         return result;
     }
@@ -88,6 +122,15 @@ namespace web
         if (_socketType == SocketType::Server) {
             socket_t rawSocket = accept(_socket, nullptr, nullptr);
             std::cout << "Accepted socket: " << rawSocket << '\n';
+#ifdef _WIN32
+            DWORD timeout = DEFAULT_VALUES::SOCKET_TIMEOUT * 1000;
+            setsockopt(rawSocket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout));
+#else
+            struct timeval tv;
+            tv.tv_sec = DEFAULT_VALUES::SOCKET_TIMEOUT;
+            tv.tv_usec = 0;
+            setsockopt(rawSocket, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
+#endif
             if (rawSocket == INVALID_SOCKET) {
                 return std::nullopt;
             }

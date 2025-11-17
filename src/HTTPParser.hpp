@@ -5,13 +5,14 @@
 #include <map>
 #include <optional>
 #include <sstream>
-#include "../libs/magic_enum/magic_enum.hpp"
+
+#include "MagicEnum.hpp"
 #include "WebTypes.hpp"
 
 namespace web
 {
     class HTTPReader;
-    //Class that parses http request string
+    //Class that parses http request stringg
     //You can get parsed http by GetRequest() which returns std::optional<HTTPRequest>
     class HTTPParser {
     public:

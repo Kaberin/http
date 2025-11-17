@@ -1,6 +1,9 @@
 #pragma once
 #include <map>
 #include <string>
+
+#include "MagicEnum.hpp"
+
 namespace web
 {
     enum class HTTPMethod {
@@ -39,7 +42,8 @@ namespace web
         Ok = 200,
         BadRequest = 400,
         NotFound = 404,
-        InternalServerError = 500
+        Timeout = 408,
+        InternalServerError = 500,
     };
 
     struct HTTPResponse {
@@ -52,10 +56,10 @@ namespace web
             std::string result = "";
             const std::string CLRF = "\r\n";
             std::string version = _version == HTTPVersion::HTTP1_1 ? "HTTP/1.1" : "HTTP/1.0";
-            std::string message = "";
+            std::string message{ magic_enum::enum_name(_statusCode) };
 
             //ONLY TEMPORARY!!!
-            switch (_statusCode) {
+       /*     switch (_statusCode) {
                 case StatusCode::Ok: {
                     message = "OK";
                     break;
@@ -72,7 +76,11 @@ namespace web
                     message = "INTERNAL SERVER ERROR";
                     break;
                 }
-            }
+                case StatusCode::Timeout: {
+                    message = "TIMEOUT";
+                    break;
+                }
+            }*/
             result = version + " " + std::to_string(static_cast<int>(_statusCode)) + " " + message + CLRF;
             std::string headers = "";
             if (!_body.empty()) {

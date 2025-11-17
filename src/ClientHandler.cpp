@@ -4,6 +4,7 @@
 #include <thread>
 #include "HTTPReader.hpp"
 #include "Utils.hpp"
+#include "Exceptions.hpp"
 namespace web {
     void ClientHandler::operator()()
     {
@@ -14,7 +15,24 @@ namespace web {
         auto timeout = std::chrono::seconds(10);
         int counter = 0;
         while (true) {
-            auto requestOpt = _socket.GetHTTPRequest();
+            std::optional <HTTPRequest> requestOpt;
+            try {
+                requestOpt = _socket.GetHTTPRequest();
+            }
+            catch (std::exception& e) {
+                std::cout << e.what() << "\n" << "Closing connection\n" << '\n';
+                HTTPResponse response{
+                       HTTPVersion::HTTP1_1,
+                       StatusCode::Timeout,
+                       {
+                           {"Connection", "close"},
+                           {"Content-Type", "text/plain"},
+                       },
+                       e.what()
+                };
+                _socket.Send(response.ToString());
+                break;
+            };
             if (requestOpt.has_value()) {
                 auto request = requestOpt.value();
                 std::cout << "Current HTTP Request: \n" << request << "\n\n";

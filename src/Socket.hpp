@@ -74,7 +74,7 @@ namespace web
         std::optional<HTTPRequest> GetHTTPRequest();
         bool Send(std::string iString) const;
         std::string Read(int bytes) const;
-        std::string Read(int chunkSize, std::string& iStopMark) const;
+        std::string Read(std::string& iStopMark) const;
         socket_t GetRawSocket() const;
         ~Socket();
     private:
