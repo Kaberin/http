@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-#include "HTTPParser.hpp"
+#include "./HTTP/HTTPReader.hpp"    
 
 namespace web
 {

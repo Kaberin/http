@@ -2,9 +2,9 @@
 #include <string>
 #include <chrono>
 #include <thread>
-#include "HTTPReader.hpp"
+#include "./HTTP/HTTPReader.hpp"
 #include "Utils.hpp"
-#include "Exceptions.hpp"
+#include "./Exceptions/Exceptions.hpp"
 namespace web {
     void ClientHandler::operator()()
     {
@@ -37,7 +37,7 @@ namespace web {
                 auto request = requestOpt.value();
                 std::cout << "Current HTTP Request: \n" << request << "\n\n";
                 if (!request._body.empty()) {
-                    HTTPResponse response {
+                    HTTPResponse response{
                         HTTPVersion::HTTP1_1,
                         StatusCode::Ok,
                         {
@@ -47,18 +47,18 @@ namespace web {
                         },
                         request._body
                     };
-                     _socket.Send(response.ToString());
+                    _socket.Send(response.ToString());
                 }
                 else {
-                   HTTPResponse response{
-                   HTTPVersion::HTTP1_1,
-                   StatusCode::Ok,
-                   {
-                       {"Connection", "keep-alive"},
-                       {"Content-Type", "text/plain"},
-                       {"chupapimunanya", "baza" }
-                   },
-                   "No body..."
+                    HTTPResponse response{
+                    HTTPVersion::HTTP1_1,
+                    StatusCode::Ok,
+                    {
+                        {"Connection", "keep-alive"},
+                        {"Content-Type", "text/plain"},
+                        {"chupapimunanya", "baza" }
+                    },
+                    "No body..."
                     };
                     _socket.Send(response.ToString());
                 }

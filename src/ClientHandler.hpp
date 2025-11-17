@@ -1,5 +1,6 @@
 #pragma once
-#include "Socket.hpp"
+
+#include "./HTTP/Socket.hpp"
 #include "WebTypes.hpp"
 namespace web {
     class ClientHandler {

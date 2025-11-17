@@ -3,8 +3,8 @@
 #include <thread>
 
 #include "src/Utils.hpp"
-#include "src/Socket.hpp"
-#include "src/HTTPReader.hpp"
+#include "src/HTTP/Socket.hpp"
+#include "src/HTTP/HTTPReader.hpp"
 #include "src/ClientHandler.hpp"
 #include "src/WebTypes.hpp"
 
