@@ -1,20 +1,38 @@
 #pragma once
 #include <exception>
+#include <string>
 namespace web {
     namespace exceptions {
-        class ConnectionClosed : public std::exception {
+
+        class HTTPException : public std::exception {
         public:
-            ConnectionClosed(const char* Message = "Connection was closed.") :std::exception{Message}{}
+            HTTPException(std::string iMessage) : _msg{ iMessage } {}
+
+            char const* what() const override 
+            {
+                return _msg.empty() ? "Unknown exception" : _msg.c_str();
+            }
+        private:
+            std::string _msg;
         };
 
-        class Timeout : public std::exception {
+        class ConnectionClosed : public HTTPException {
         public:
-            Timeout(const char* Message = "Server timeout.") :std::exception{ Message }{}
+            ConnectionClosed(std::string iMessage = "Connection was closed.") : HTTPException{ iMessage } {
+            }
+        private:
         };
 
-        class SocketError : public std::exception {
+        class Timeout : public HTTPException {
         public:
-            SocketError(const char* Message = "Socket error.") :std::exception{ Message }{}
+            Timeout(std::string iMessage = "Socket timeout.") : HTTPException{ iMessage } {
+            }
+        };
+
+        class SocketError : public HTTPException {
+        public:
+            SocketError(std::string iMessage = "Socket error.") : HTTPException{ iMessage } {
+            }
         };
     }
 }
