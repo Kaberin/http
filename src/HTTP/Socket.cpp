@@ -185,18 +185,18 @@ namespace web
 #else
         fd_set readfds;
         FD_ZERO(&readfds);
-        FD_SET(sock, &readfds);
+        FD_SET(_socket, &readfds);
 
         timeval tv;
         tv.tv_sec = 0;
         tv.tv_usec = 0;
 
-        int ret = select(sock + 1, &readfds, nullptr, nullptr, &tv);
+        int ret = select(_socket + 1, &readfds, nullptr, nullptr, &tv);
 
         if (ret < 0)
             return false;
 
-        return FD_ISSET(sock, &readfds);
+        return FD_ISSET(_socket, &readfds);
 #endif
     }
 
