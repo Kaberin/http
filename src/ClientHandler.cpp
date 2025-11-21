@@ -6,7 +6,7 @@
 #include "Utils.hpp"
 #include "./Exceptions/Exceptions.hpp"
 namespace web {
-    void ClientHandler::operator()()
+    void ClientHandler::operator()(const Router& iRouter)
     {
         std::cout << "Socket ID: " << _socket.GetRawSocket() << " in thread " << std::this_thread::get_id() << '\n';
         std::cout << "Client Handler start\n";
@@ -15,59 +15,21 @@ namespace web {
         auto timeout = std::chrono::seconds(10);
         int counter = 0;
         while (true) {
-            std::optional <HTTPRequest> requestOpt;
+            std::optional <HTTPRequest> requestOptional;
             try {
-                requestOpt = _socket.GetHTTPRequest();
+                requestOptional = _socket.GetHTTPRequest();
             }
             catch (std::exception& e) {
-                std::cout << e.what() << "\n" << "Closing connection\n" << '\n';
-                HTTPResponse response{
-                       HTTPVersion::HTTP1_1,
-                       StatusCode::Timeout,
-                       {
-                           {"Connection", "close"},
-                           {"Content-Type", "text/plain"},
-                       },
-                       e.what()
-                };
-                _socket.Send(response.ToString());
+                ExceptionHandler(e);
                 break;
             };
-            if (requestOpt.has_value()) {
-                auto request = requestOpt.value();
-                std::cout << "Current HTTP Request: \n" << request << "\n\n";
-                if (!request._body.empty()) {
-                    HTTPResponse response{
-                        HTTPVersion::HTTP1_1,
-                        StatusCode::Ok,
-                        {
-                            {"Connection", "keep-alive"},
-                            {"Content-Type", "text/plain"},
-                            {"chupapimunanya", "baza" }
-                        },
-                        request._body
-                    };
-                    _socket.Send(response.ToString());
-                }
-                else {
-                    HTTPResponse response{
-                    HTTPVersion::HTTP1_1,
-                    StatusCode::Ok,
-                    {
-                        {"Connection", "keep-alive"},
-                        {"Content-Type", "text/plain"},
-                        {"chupapimunanya", "baza" }
-                    },
-                    "No body..."
-                    };
-                    _socket.Send(response.ToString());
-                }
-                if (request._headers["connection"] == "close" || request._headers["Connection"] == "close") {
-                    std::cout << "Conection is closed by client.\n";
-                    break;
-                }
-            }
-            else {
+
+            if (requestOptional.has_value()) {
+                auto response = iRouter.Match(requestOptional.value());
+               _socket.Send(response.ToString());
+               if (response._headers["Connection"] == "close") {
+                   break;
+               }
             }
         }
         std::cout << "End of ClientHandler process.\n";

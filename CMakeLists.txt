@@ -5,27 +5,17 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_subdirectory(src)
 
-add_executable(WebServer ./server.cpp)
+add_executable(WebServer 
+./server.hpp
+./server.cpp
+./main.cpp
+)
 
-target_link_libraries(WebServer PRIVATE srcLib)
+target_link_libraries(WebServer PRIVATE Source)
 
 if(WIN32)
     target_link_libraries(WebServer PRIVATE ws2_32)
 endif()
-# add_executable(WebServer
-#     ./server.cpp
-#     ./src/Socket.cpp
-#     ./src/HTTPReader.cpp
-#     ./src/HTTPParser.cpp
-#     ./src/ClientHandler.cpp
-#     ./src/Utils.cpp
-#     ./src/Socket.hpp
-#     ./src/HTTPReader.hpp
-#     ./src/HTTPParser.hpp
-#     ./src/ClientHandler.hpp
-#     ./src/Utils.hpp
-#     ./src/WebTypes.hpp
-# )
 
 set_target_properties(WebServer PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}")
 

@@ -8,9 +8,9 @@ namespace web
     std::optional<HTTPRequest> HTTPReader::ReadHTTPRequest(const Socket& iSocket)
     {
         std::string iRawRequest;
-        std::string stop = "\r\n\r\n";
         std::string line = "";
         try {
+            std::string stop = "\r\n\r\n";
             line = iSocket.Read(stop);
         }
         catch (exceptions::HTTPException& e) {
@@ -24,7 +24,6 @@ namespace web
         HTTPRequest resultRequest;
         if (parsedrequest.has_value()) {
             auto request = parsedrequest.value();
-            bool isContentType = request._headers.find("Content-Type") != request._headers.end();
             auto contentLengthStr = "Content-Length";
             bool isContentLength = request._headers.find(contentLengthStr) != request._headers.end();
             bool isLengthANumber = isContentLength ? Utils::IsInteger(request._headers[contentLengthStr]) : false;

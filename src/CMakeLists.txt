@@ -1,6 +1,7 @@
 add_subdirectory(Exceptions)
 add_subdirectory(HTTP)
-add_library(srcLib
+add_subdirectory(Router)
+add_library(Source
     ./ClientHandler.cpp
     ./Utils.cpp
     ./ClientHandler.hpp
@@ -10,7 +11,8 @@ add_library(srcLib
     ./MagicEnum.hpp
 )
 
-target_link_libraries(srcLib PRIVATE HTTPExceptions)
-target_link_libraries(srcLib PRIVATE HTTP)
+target_link_libraries(Source PRIVATE HTTPExceptions)
+target_link_libraries(Source PRIVATE HTTP)
+target_link_libraries(Source PRIVATE Router)
 
-target_include_directories(srcLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(Source PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

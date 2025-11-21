@@ -2,6 +2,9 @@
 #ifdef _WIN32
 
 #include "winsock2.h"
+#include <ws2tcpip.h>
+#include <chrono>
+#include "../DefaulValues.hpp"
 using socket_t = SOCKET;
 
 #else
@@ -40,46 +43,28 @@ namespace web
     };
 #endif
     class Socket {
+        using Clock = std::chrono::steady_clock;
     public:
-        Socket(socket_t iRawSocket, SocketType iSocketType) : _socket{ iRawSocket }, _socketType{ iSocketType } {
-            std::cout << "Client socket constructor...\n";
-        }
+        Socket(socket_t iRawSocket, SocketType iSocketType);
         Socket(int iServerPort, SocketType iSocketType, int backlog);
-        std::optional<Socket> AcceptConnection();
         Socket(Socket& iSocket) = delete;
         Socket& operator=(Socket& iSocket) = delete;
-        Socket(Socket&& iSocket) : _socket{ iSocket._socket }, _socketType{ iSocket._socketType } {
-            //std::cout << "Move socket constructor...\n";e
-            iSocket._socket = INVALID_SOCKET;
-        }
-        Socket& operator=(Socket&& iSocket) {
-            std::cout << "Move assignment...\n";
-#ifdef _WIN32
-            if (_socket != INVALID_SOCKET)
-            {
-                closesocket(_socket);
-            }
-#else
-            if (_socket != INVALID_SOCKET)
-            {
-                close(_socket);
-            }
-#endif
-            _socket = iSocket._socket;
-            _socketType = iSocket._socketType;
-            iSocket._socket = INVALID_SOCKET;
-            return *this;
-        };
+        Socket(Socket&& iSocket) noexcept;
+        Socket& operator=(Socket&& iSocket) noexcept;
 
+        std::optional<Socket> AcceptConnection();
         std::optional<HTTPRequest> GetHTTPRequest();
         bool Send(std::string iString) const;
         std::string Read(int bytes) const;
         std::string Read(std::string& iStopMark) const;
+        bool HasData() const;
         socket_t GetRawSocket() const;
         ~Socket();
     private:
+        void ProcessException() const;
+
         socket_t _socket;
         SocketType _socketType;
+        static std::chrono::seconds _idleTtimer;
     };
-
 }

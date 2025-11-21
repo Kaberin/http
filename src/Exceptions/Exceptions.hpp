@@ -21,9 +21,15 @@ namespace web {
         private:
         };
 
-        class Timeout : public HTTPException {
+        class SocketTimeout : public HTTPException {
         public:
-            Timeout(std::string iMessage = "Socket timeout.") : HTTPException{ iMessage } {
+            SocketTimeout(std::string iMessage = "Socket timeout.") : HTTPException{ iMessage } {
+            }
+        };
+
+        class IdleTimeout : public HTTPException {
+        public:
+            IdleTimeout(std::string iMessage = "Idle timeout.") : HTTPException{ iMessage } {
             }
         };
 

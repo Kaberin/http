@@ -38,10 +38,16 @@ namespace web
         HTTP1_0
     };
 
+    enum class ContentType {
+        APPLICATION_JSON,
+        TEXT_PLAIN
+    };
+
     enum class StatusCode {
         Ok = 200,
         BadRequest = 400,
         NotFound = 404,
+        NotAllowed = 405,
         Timeout = 408,
         InternalServerError = 500,
     };
@@ -57,30 +63,6 @@ namespace web
             const std::string CLRF = "\r\n";
             std::string version = _version == HTTPVersion::HTTP1_1 ? "HTTP/1.1" : "HTTP/1.0";
             std::string message{ magic_enum::enum_name(_statusCode) };
-
-            //ONLY TEMPORARY!!!
-       /*     switch (_statusCode) {
-                case StatusCode::Ok: {
-                    message = "OK";
-                    break;
-                }
-                case StatusCode::BadRequest: {
-                    message = "BAD REQUEST";
-                    break;
-                }
-                case StatusCode::NotFound: {
-                    message = "NOT FOUND";
-                    break;
-                }
-                case StatusCode::InternalServerError: {
-                    message = "INTERNAL SERVER ERROR";
-                    break;
-                }
-                case StatusCode::Timeout: {
-                    message = "TIMEOUT";
-                    break;
-                }
-            }*/
             result = version + " " + std::to_string(static_cast<int>(_statusCode)) + " " + message + CLRF;
             std::string headers = "";
             if (!_body.empty()) {

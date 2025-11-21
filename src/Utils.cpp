@@ -1,5 +1,6 @@
 #include "Utils.hpp"
 #include "../libs/nlohmann/json.hpp"
+#include "../libs/magic_enum/magic_enum.hpp"
 #include <algorithm>
 namespace web
 {
@@ -17,6 +18,25 @@ namespace web
                 return false;
                 });
         }
+
+        std::string ContentTypeToStr(ContentType iType)
+        {
+            std::string s = std::string(magic_enum::enum_name(iType));
+            std::ranges::transform(s, s.begin(), [](char c) {
+                return std::tolower(c);
+                });
+            std::ranges::replace(s, '_', '/');
+            return s;
+        }
+
+        ContentType StrToContentType(std::string iType)
+        {
+            std::ranges::transform(iType, iType.begin(), [](char c) {
+                return std::toupper(c);
+            });
+            std::ranges::replace(iType, '/', '_');
+            return magic_enum::enum_cast<ContentType>(iType).value_or(ContentType::TEXT_PLAIN);
+        }
     }
 
 
@@ -30,25 +50,44 @@ namespace web
         using nlohmann::json;
       
         if (!req._body.empty()) {
-            try {
-                json j = json::parse(req._body);
-                os << "Body:\n" << j.dump(4) << '\n';
-
-            }
-            catch(const json::parse_error& e){
-                std::cout << e.what() << '\n';
+            if (req._headers.find("Content-Type") != req._headers.end()) {
+                auto h = req._headers.at("Content-Type");
+                ContentType type = Utils::StrToContentType(h);
+                switch (type) {
+                    case ContentType::TEXT_PLAIN: {
+                        std::cout << req._body << '\n';
+                        break;
+                    }
+                    case ContentType::APPLICATION_JSON: {
+                        try {
+                            json j = json::parse(req._body);
+                            os << "Body:\n" << j.dump(4) << '\n';
+                        }
+                        catch (const json::parse_error& e) {
+                            std::cout << e.what() << '\n';
+                        }
+                    }
+                }
             }
         }
 
         return os;
     }
 
-    std::ostream& operator<<(std::ostream& os, const std::map<std::string, std::string>& map) {
+    std::ostream& operator<<(std::ostream& os, const std::map<std::string, std::string>& map) 
+    {
         os << " {\n";
         for (const auto& [key, value] : map) {
             os << '\t' << key << ": " << value << '\n';
         }
         os << "}";
+        return os;
+    }
+   
+    std::ostream& operator<<(std::ostream& os, const std::vector<std::string>& aStrings) {
+        for (const auto& s : aStrings) {
+            os << s << " ";
+        }
         return os;
     }
 }
