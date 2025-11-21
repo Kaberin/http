@@ -6,9 +6,9 @@ set(CMAKE_CXX_STANDARD 20)
 add_subdirectory(src)
 
 add_executable(WebServer 
-./server.hpp
-./server.cpp
-./main.cpp
+    ${PROJECT_SOURCE_DIR}/server.cpp
+    ${PROJECT_SOURCE_DIR}/server.hpp
+    ${PROJECT_SOURCE_DIR}/main.cpp
 )
 
 target_link_libraries(WebServer PRIVATE Source)
