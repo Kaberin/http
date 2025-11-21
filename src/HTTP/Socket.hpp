@@ -3,7 +3,7 @@
 
 #include "winsock2.h"
 #include <ws2tcpip.h>
-#include <chrono>
+
 #include "../DefaulValues.hpp"
 using socket_t = SOCKET;
 
@@ -19,6 +19,7 @@ using socket_t = int;
 #endif
 #include <iostream>
 #include <optional>
+#include <chrono>
 #include "../WebTypes.hpp"
 
 namespace web
