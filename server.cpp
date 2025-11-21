@@ -1,6 +1,6 @@
 //Server.cpp
 #include <thread>
-#include "Server.hpp"
+#include "server.hpp"
 
 namespace web {
     Server::Server(int iPort, Router iRouter) : _port{ iPort }, _router{ iRouter } {}
