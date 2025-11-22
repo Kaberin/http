@@ -1,6 +1,6 @@
-add_library(Router
-    Router.cpp
-    Router.hpp
+Set(ROUTER_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Router.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Router.hpp
 )
 
-target_include_directories(Router PUBLIC  ${CMAKE_CURRENT_SOURCE_DIR})
+set(ROUTER_FILES ${ROUTER_FILES} PARENT_SCOPE)
