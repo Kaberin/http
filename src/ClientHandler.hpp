@@ -4,6 +4,7 @@
 #include "WebTypes.hpp"
 #include "Exceptions/Exceptions.hpp"
 #include "./Router/Router.hpp"
+#include "DefaulValues.hpp"
 namespace web {
     class ClientHandler {
     public:

@@ -4,7 +4,6 @@
 #include <thread>
 #include "./HTTP/HTTPReader.hpp"
 #include "Utils.hpp"
-#include "DefaulValues.hpp"
 #include "./Exceptions/Exceptions.hpp"
 namespace web {
     void ClientHandler::operator()(const Router& iRouter)
