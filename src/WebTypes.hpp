@@ -52,6 +52,13 @@ namespace web
         InternalServerError = 500,
     };
 
+    enum class FileType {
+        HTML, 
+        CSS,
+        JS,
+        INVALID
+    };
+
     struct HTTPResponse {
         HTTPVersion _version;
         StatusCode _statusCode;

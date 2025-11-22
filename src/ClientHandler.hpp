@@ -21,8 +21,8 @@ namespace web {
                    HTTPVersion::HTTP1_1,
                    StatusCode::Timeout,
                    {
-                       {"Connection", "close"},
-                       {"Content-Type", "text/plain"},
+                       {HeaderNames::CONNECTION, HeaderValues::CONNECTION_CLOSE},
+                       {HeaderNames::CONTENT_TYPE, HeaderValues::CONTENT_TYPE_TEXT_PLAIN},
                    },
                    e.what()
             };

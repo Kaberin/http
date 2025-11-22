@@ -6,7 +6,7 @@
 #include "../Exceptions/Exceptions.hpp"
 namespace web
 {
-    std::chrono::seconds Socket::_idleTtimer = std::chrono::seconds(DEFAULT_VALUES::IDLE_TIMEOUT);
+    std::chrono::seconds Socket::_idleTtimer = std::chrono::seconds(DefaultValues::IDLE_TIMEOUT);
 
     Socket::Socket(int iServerPort, SocketType iSocketType, int backlog) {
         //std::cout << "Server socket constructor...\n";
@@ -137,13 +137,13 @@ namespace web
     std::optional<Socket> Socket::AcceptConnection() {
         if (_socketType == SocketType::Server) {
             socket_t rawSocket = accept(_socket, nullptr, nullptr);
-            std::cout << "Accepted socket: " << rawSocket << '\n';
+            //std::cout << "Accepted socket: " << rawSocket << '\n';
 #ifdef _WIN32
-            DWORD timeout = DEFAULT_VALUES::SOCKET_TIMEOUT * 1000;
+            DWORD timeout = DefaultValues::SOCKET_TIMEOUT * 1000;
             setsockopt(rawSocket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout));
 #else
             struct timeval tv;
-            tv.tv_sec = DEFAULT_VALUES::SOCKET_TIMEOUT;
+            tv.tv_sec = DefaultValues::SOCKET_TIMEOUT;
             tv.tv_usec = 0;
             setsockopt(rawSocket, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
 #endif

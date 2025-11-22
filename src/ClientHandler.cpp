@@ -10,10 +10,6 @@ namespace web {
     {
         std::cout << "Socket ID: " << _socket.GetRawSocket() << " in thread " << std::this_thread::get_id() << '\n';
         std::cout << "Client Handler start\n";
-        auto start = std::chrono::steady_clock::now();
-        auto lastPrint = start;
-        auto timeout = std::chrono::seconds(10);
-        int counter = 0;
         while (true) {
             std::optional <HTTPRequest> requestOptional;
             try {
@@ -26,10 +22,10 @@ namespace web {
 
             if (requestOptional.has_value()) {
                 auto response = iRouter.Match(requestOptional.value());
-               _socket.Send(response.ToString());
-               if (response._headers["Connection"] == "close") {
-                   break;
-               }
+                _socket.Send(response.ToString());
+                if (response._headers[HeaderNames::CONNECTION] == HeaderValues::CONNECTION_CLOSE) {
+                    break;
+                }
             }
         }
         std::cout << "End of ClientHandler process.\n";

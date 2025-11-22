@@ -26,6 +26,9 @@ cmake:
 	cmake -S . -B ./build 
 	cmake --build ./build --config RelWithDebInfo
 
+server_static:
+	g++ -std=c++20 ./server.cpp ./main.cpp ./src/Utils.cpp ./src/ClientHandler.cpp ./src/Router/Router.cpp ./src/HTTP/HTTPParser.cpp ./src/HTTP/HTTPReader.cpp ./src/HTTP/Socket.cpp ./src/Exceptions/Exceptions.cpp -static -o server_static.exe -lws2_32 -w
+
 clean:
 	@echo Cleaning build directory...
 	@rmdir /s /q build

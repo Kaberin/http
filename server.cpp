@@ -13,7 +13,6 @@ namespace web {
             if (!clientSocketOpt) {
                 continue;
             }
-
             std::thread clientThread([socket = std::move(*clientSocketOpt), this]() mutable {
                 web::ClientHandler handler(std::move(socket));
                 handler(std::cref(_router));
