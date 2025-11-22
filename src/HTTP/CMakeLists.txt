@@ -1,10 +1,10 @@
-add_library(HTTP
-    HTTPParser.cpp
-    HTTPParser.hpp
-    HTTPReader.cpp
-    HTTPReader.hpp
-    Socket.hpp
-    Socket.cpp
+Set(HTTP_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/HTTPParser.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/HTTPParser.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/HTTPReader.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/HTTPReader.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Socket.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Socket.hpp
 )
 
-target_include_directories(HTTP PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+set(HTTP_FILES ${HTTP_FILES} PARENT_SCOPE)

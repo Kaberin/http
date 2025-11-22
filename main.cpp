@@ -1,6 +1,6 @@
 #include "server.hpp"
 #include "src/DefaulValues.hpp"
-#include "../libs/nlohmann/json.hpp"   
+#include "./libs/nlohmann/json.hpp"   
 #include <fstream>
 #include <filesystem>
 web::HTTPResponse StaticHandler1(const web::HTTPRequest& req, web::Router::QueryParameters qParams)
@@ -58,7 +58,7 @@ web::HTTPResponse UserHandler(const web::HTTPRequest& req, web::Router::QueryPar
     resp._headers[web::HeaderNames::CONTENT_TYPE] = web::HeaderValues::CONTENT_TYPE_APP_JSON;
 
     user u{ "Anton", "Baton", 18, 170. };
-    
+
     nlohmann::json j{
         {"Name", u.name },
         {"SecondName", u.secondName },
@@ -121,7 +121,7 @@ web::HTTPResponse WildHandler(const web::HTTPRequest& req, web::Router::QueryPar
 
     if (type == web::FileType::HTML) {
         contentType = web::HeaderValues::CONTENT_TYPE_TEXT_HTML;
-    } 
+    }
     else if (type == web::FileType::CSS) {
         contentType = web::HeaderValues::CONTENT_TYPE_TEXT_CSS;
     }

@@ -1,6 +1,11 @@
-add_library(HTTPExceptions
-    ./Exceptions.cpp
-    ./Exceptions.hpp
+# add_library(HTTPExceptions
+#     Exceptions.cpp
+#     Exceptions.hpp
+    
+# )
+set(EXCEPTIONS_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Exceptions.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Exceptions.hpp
 )
 
-target_include_directories(HTTPExceptions PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+set(EXCEPTIONS_FILES ${EXCEPTIONS_FILES} PARENT_SCOPE)
