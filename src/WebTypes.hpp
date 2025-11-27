@@ -31,6 +31,14 @@ namespace web
         std::string _version;
         std::map<std::string, std::string> _headers;
         std::string _body;
+
+        std::optional<std::string> GetHeader(std::string iHeaderName)
+        {
+            if (_headers.find(iHeaderName) != _headers.end()) {
+                return _headers[iHeaderName];
+            }
+            return std::nullopt;
+        }
     };
 
     enum class HTTPVersion {
@@ -45,6 +53,7 @@ namespace web
 
     enum class StatusCode {
         Ok = 200,
+        Redirect = 301,
         BadRequest = 400,
         NotFound = 404,
         NotAllowed = 405,
@@ -56,6 +65,8 @@ namespace web
         HTML, 
         CSS,
         JS,
+        JPG, 
+        PNG,
         INVALID
     };
 

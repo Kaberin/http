@@ -2,6 +2,7 @@
 #include "../libs/nlohmann/json.hpp"
 #include "../libs/magic_enum/magic_enum.hpp"
 #include <algorithm>
+#include <fstream>
 namespace web
 {
     namespace Utils
@@ -36,6 +37,17 @@ namespace web
             });
             std::ranges::replace(iType, '/', '_');
             return magic_enum::enum_cast<ContentType>(iType).value_or(ContentType::TEXT_PLAIN);
+        }
+
+        std::string ReadFile(std::ifstream& file) {
+            if (!file) {
+                return {};
+            }
+            std::string fileContent((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+            if (fileContent.empty()) {
+                return {};
+            }
+            return fileContent;
         }
     }
 

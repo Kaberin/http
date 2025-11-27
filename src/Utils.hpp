@@ -11,6 +11,7 @@ namespace web
 
         std::string ContentTypeToStr(ContentType iType);
         ContentType StrToContentType(std::string iType);
+        std::string ReadFile(std::ifstream& file);
     }
 
     //std::ostream& operator<<(std::ostream& os, const std::vector<std::string>& aStrings);

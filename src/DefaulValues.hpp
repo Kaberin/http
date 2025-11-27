@@ -8,6 +8,7 @@ namespace web {
         static const str CONNECTION = "Connection";
         static const str CONTENT_TYPE = "Content-Type";
         static const str CONTENT_LENGTH = "Content-Length";
+        static const str TRANSFER_ENCODING = "Transfer-Encoding";
     }
 
     namespace HeaderValues {
@@ -19,6 +20,9 @@ namespace web {
         static const str CONTENT_TYPE_TEXT_HTML = "text/html";
         static const str CONTENT_TYPE_TEXT_CSS = "text/css";
         static const str CONTENT_TYPE_TEXT_JS = "text/javascript";
+        static const str CONTENT_TYPE_IMG_JPG = "image/jpeg";
+        static const str CONTENT_TYPE_IMG_PNG = "image/png";
+        static const str TRANSFER_ENCODING = "chunked";
     }
 
     namespace DefaultValues {
@@ -61,6 +65,12 @@ namespace web {
                 { HeaderNames::CONTENT_TYPE, HeaderValues::CONTENT_TYPE_TEXT_PLAIN }
             }
         };
+
+        static const HTTPResponse REDIRECT_RESPONSE = {
+            HTTPVersion::HTTP1_1,
+            StatusCode::Redirect,
+        };
+
     }
 
 
