@@ -22,7 +22,7 @@ namespace web {
         static const str CONTENT_TYPE_TEXT_JS = "text/javascript";
         static const str CONTENT_TYPE_IMG_JPG = "image/jpeg";
         static const str CONTENT_TYPE_IMG_PNG = "image/png";
-        static const str TRANSFER_ENCODING = "chunked";
+        static const str TRANSFER_ENCODING_CHUNK = "chunked";
     }
 
     namespace DefaultValues {

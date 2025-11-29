@@ -5,7 +5,8 @@ set(SOURCE_FILES
     ${EXCEPTIONS_FILES}
     ${HTTP_FILES}
     ${ROUTER_FILES}
-    src/ClientHandler.cpp
-    src/Utils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ClientHandler.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Utils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/DefaulValues.hpp
 )
 set(SOURCE_FILES ${SOURCE_FILES} PARENT_SCOPE)

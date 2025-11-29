@@ -15,6 +15,11 @@ if(WIN32)
     target_link_libraries(WebServer PRIVATE ws2_32)
 endif()
 
+set(OPEN_SSL_INCLUDE "C:/Program Files/OpenSSL")
+find_package(OpenSSL REQUIRED)
+include_directories(${OPENSSL_INCLUDE_DIR})
+target_link_libraries(WebServer PRIVATE ${OPENSSL_LIBRARIES})
+
 set_target_properties(WebServer PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}")
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/src FILES ${SOURCE_FILES})

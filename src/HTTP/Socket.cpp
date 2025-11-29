@@ -67,12 +67,25 @@ namespace web
         return _socket;
     }
 
-    std::string Socket::Read(int bytes) const {
+    void Socket::PutBack(const std::string& iPutback) const
+    {
+        _buffer = iPutback + _buffer;
+    }
+
+    std::string Socket::Read(size_t bytes) const {
         int bytesToRead = bytes;
         char buf[1024];
 
         int readBytes = 0;
         std::string result;
+
+        if (!_buffer.empty()) {
+            size_t take = (std::min)(bytes, _buffer.size());
+            result += _buffer.substr(0, take);
+            _buffer.erase(0, take);
+            bytesToRead -= take;
+        }
+
         while (bytesToRead > 0) {
             readBytes = recv(_socket, buf, (std::min)(bytesToRead, static_cast<int>(sizeof(buf))), 0);
             if (readBytes == 0) {
@@ -87,13 +100,19 @@ namespace web
         return result;
     }
 
-    std::string Socket::Read(std::string& iStopMark) const
+    std::string Socket::Read(const std::string& iStopMark) const
     {
         char buf[1024];
         int readBytes = 0;
         std::string result;
         auto last_activity = Clock::now();
         while (true) {
+            auto stopMarkPos = _buffer.find(iStopMark);
+            if (stopMarkPos != std::string::npos) {
+                result += _buffer.substr(0, stopMarkPos);
+                _buffer.erase(0, stopMarkPos + iStopMark.size());
+                return result;
+            }
             if (!HasData()) {
                 auto now = Clock::now();
                 if (now - last_activity >= _idleTtimer) {
@@ -110,11 +129,7 @@ namespace web
                 ProcessException();
             }
 
-            result.append(buf, readBytes);
-            if (result.find(iStopMark) != std::string::npos) {
-                break;
-            }
-
+            _buffer.append(buf, readBytes);
             last_activity = Clock::now();
         }
         return result;

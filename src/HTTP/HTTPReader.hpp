@@ -20,7 +20,7 @@ using socket_t = int;
 #include "./HTTPParser.hpp"
 namespace web
 {
-    //Reads HTTP Request from socket. Owns socket and closes it by himself
+    //Reads HTTP Request from socket
     class HTTPReader {
     public:
         std::optional<HTTPRequest> ReadHTTPRequest(const Socket& iSocket);

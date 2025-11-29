@@ -56,16 +56,23 @@ namespace web
         std::optional<Socket> AcceptConnection();
         std::optional<HTTPRequest> GetHTTPRequest();
         bool Send(std::string iString) const;
-        std::string Read(int bytes) const;
-        std::string Read(std::string& iStopMark) const;
+        std::string Read(size_t bytes) const;
+        std::string Read(const std::string& iStopMark) const;
         bool HasData() const;
         socket_t GetRawSocket() const;
         ~Socket();
+        void PutBack(const std::string&) const;
+
+        const std::string& GetBuffer() const {
+            return _buffer;
+        }
     private:
         void ProcessException() const;
 
         socket_t _socket;
         SocketType _socketType;
         static std::chrono::seconds _idleTtimer;
+        
+        mutable std::string _buffer;
     };
 }
