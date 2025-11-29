@@ -1,14 +1,13 @@
-//HTTPReader.cpp
+// HTTPReader.cpp
 #include "HTTPReader.hpp"
+
 #include <cmath>
-#include "../Utils.hpp"
-#include "../Exceptions/Exceptions.hpp"
+
 #include "../DefaulValues.hpp"
-#include <openssl/ssl.h>
-namespace web
-{
-    std::string HandleChunked(const Socket& iSocket)
-    {
+#include "../Exceptions/Exceptions.hpp"
+#include "../Utils.hpp"
+namespace web {
+    std::string HandleChunked(const Socket& iSocket) {
         std::string body;
         const std::string CLRF = "\r\n";
         while (true) {
@@ -20,14 +19,14 @@ namespace web
                     break;
                 }
                 std::string chunk = iSocket.Read(chunkSize);
-                std::cout << "Read chunk: " << chunk << "\n" << "Size of chunk is " << chunk.size() << "\n";
+                std::cout << "Read chunk: " << chunk << "\n"
+                          << "Size of chunk is " << chunk.size() << "\n";
                 std::cout << "Remained buffer: " << iSocket.GetBuffer() << '\n';
                 if (!chunk.empty()) {
                     body.append(chunk);
                 }
                 iSocket.Read(CLRF);
-            }
-            catch (const std::exception& e) {
+            } catch (const std::exception& e) {
                 break;
             }
         }
@@ -36,22 +35,20 @@ namespace web
             if (!iSocket.GetBuffer().empty() || iSocket.HasData()) {
                 iSocket.Read(CLRF);
             }
-        }
-        catch (const std::exception& e) {
+        } catch (const std::exception& e) {
             std::cout << e.what() << '\n';
         }
         return body;
     }
 
-    std::optional<HTTPRequest> HTTPReader::ReadHTTPRequest(const Socket& iSocket)
-    {
+    std::optional<HTTPRequest> HTTPReader::ReadHTTPRequest(
+        const Socket& iSocket) {
         std::string iRawRequest;
         std::string line = "";
         try {
             std::string stop = "\r\n\r\n";
             line = iSocket.Read(stop);
-        }
-        catch (exceptions::HTTPException& e) {
+        } catch (exceptions::HTTPException& e) {
             throw;
         }
         if (line.empty()) return std::nullopt;
@@ -63,22 +60,31 @@ namespace web
         if (parsedrequest.has_value()) {
             auto& request = parsedrequest.value();
             std::cout << request << '\n';
-            //auto headerEnd = iRawRequest.find("\r\n\r\n") + 4;
+            // auto headerEnd = iRawRequest.find("\r\n\r\n") + 4;
             std::string bodyInBuffer;
-            if(request.GetHeader(HeaderNames::TRANSFER_ENCODING).has_value() && request.GetHeader(HeaderNames::TRANSFER_ENCODING).value() == HeaderValues::TRANSFER_ENCODING_CHUNK){
-                std::cout << "Buffer start:\n" << iSocket.GetBuffer() << "\nBuffer end.\n";
+            if (request.GetHeader(HeaderNames::TRANSFER_ENCODING).has_value() &&
+                request.GetHeader(HeaderNames::TRANSFER_ENCODING).value() ==
+                    HeaderValues::TRANSFER_ENCODING_CHUNK) {
+                std::cout << "Buffer start:\n"
+                          << iSocket.GetBuffer() << "\nBuffer end.\n";
                 bodyInBuffer.append(HandleChunked(iSocket));
-            }
-            else {
+            } else {
                 auto contentLengthStr = "Content-Length";
-                bool isContentLength = request._headers.find(contentLengthStr) != request._headers.end();
-                bool isLengthANumber = isContentLength ? Utils::IsInteger(request._headers[contentLengthStr]) : false;
-                int contentLength = isLengthANumber ? Utils::StringToInteger(request._headers[contentLengthStr]) : 0;
+                bool isContentLength =
+                    request._headers.find(contentLengthStr) !=
+                    request._headers.end();
+                bool isLengthANumber =
+                    isContentLength
+                        ? Utils::IsInteger(request._headers[contentLengthStr])
+                        : false;
+                int contentLength =
+                    isLengthANumber ? Utils::StringToInteger(
+                                          request._headers[contentLengthStr])
+                                    : 0;
                 int remainingBytes = contentLength - bodyInBuffer.size();
                 try {
                     bodyInBuffer += iSocket.Read(remainingBytes);
-                }
-                catch (exceptions::HTTPException& e) {
+                } catch (exceptions::HTTPException& e) {
                     throw;
                 }
             }
@@ -89,4 +95,4 @@ namespace web
         }
         return std::nullopt;
     }
-}
+}  // namespace web

@@ -1,29 +1,19 @@
-//HTTPReader.hpp
+// HTTPReader.hpp
 #pragma once
-#include <string>
-#ifdef _WIN32
-
-#include "winsock2.h"
-using socket_t = SOCKET;
-
-#else
-
-#include <sys/socket.h>
-#include <netinet/in.h>
 #include <arpa/inet.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
 #include <unistd.h>
+
+#include <string>
 using socket_t = int;
 
-#endif
-
-#include "./Socket.hpp"
 #include "./HTTPParser.hpp"
-namespace web
-{
-    //Reads HTTP Request from socket
+#include "./Socket.hpp"
+namespace web {
     class HTTPReader {
-    public:
+       public:
         std::optional<HTTPRequest> ReadHTTPRequest(const Socket& iSocket);
     };
 
-}
+}  // namespace web

@@ -1,8 +1,3 @@
-# add_library(HTTPExceptions
-#     Exceptions.cpp
-#     Exceptions.hpp
-    
-# )
 set(EXCEPTIONS_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Exceptions.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Exceptions.hpp

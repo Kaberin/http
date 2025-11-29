@@ -1,19 +1,19 @@
 #pragma once
-#include "src/Utils.hpp"
-#include "src/HTTP/Socket.hpp"
-#include "src/HTTP/HTTPReader.hpp"
 #include "src/ClientHandler.hpp"
-#include "src/WebTypes.hpp"
+#include "src/HTTP/HTTPReader.hpp"
+#include "src/HTTP/Socket.hpp"
 #include "src/Router/Router.hpp"
-
+#include "src/Utils.hpp"
+#include "src/WebTypes.hpp"
 
 namespace web {
     class Server {
-    public:
+       public:
         Server(int iPort, Router iRouter);
         void Start();
-    private:
+
+       private:
         Router _router;
         int _port;
     };
-}
+}  // namespace web

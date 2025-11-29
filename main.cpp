@@ -1,10 +1,10 @@
 #include "server.hpp"
+#include "src/Logger/Logger.hpp"
 #include "src/Router/Routes.hpp"
 
 int main() {
-#ifdef _WIN32
-    web::WSAInit init;
-#endif
+    web::Logger::GetInstance().Log(web::LogType::INFO,
+                                   "The server has started!");
     web::Router router;
     web::RegisterRoutes(router);
     web::Server server(8080, router);

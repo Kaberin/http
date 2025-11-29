@@ -4,21 +4,10 @@
 
 #include "MagicEnum.hpp"
 
-namespace web
-{
-    enum class HTTPMethod {
-        GET,
-        POST,
-        PUT,
-        DEL,
-        EMPTY
-    };
+namespace web {
+    enum class HTTPMethod { GET, POST, PUT, DEL, EMPTY };
 
-    enum class HTTPConnection {
-        Close,
-        KeepAlive
-    };
-
+    enum class HTTPConnection { Close, KeepAlive };
 
     enum class SocketType {
         Client,
@@ -32,8 +21,7 @@ namespace web
         std::map<std::string, std::string> _headers;
         std::string _body;
 
-        std::optional<std::string> GetHeader(std::string iHeaderName)
-        {
+        std::optional<std::string> GetHeader(std::string iHeaderName) {
             if (_headers.find(iHeaderName) != _headers.end()) {
                 return _headers[iHeaderName];
             }
@@ -41,15 +29,9 @@ namespace web
         }
     };
 
-    enum class HTTPVersion {
-        HTTP1_1,
-        HTTP1_0
-    };
+    enum class HTTPVersion { HTTP1_1, HTTP1_0 };
 
-    enum class ContentType {
-        APPLICATION_JSON,
-        TEXT_PLAIN
-    };
+    enum class ContentType { APPLICATION_JSON, TEXT_PLAIN };
 
     enum class StatusCode {
         Ok = 200,
@@ -61,14 +43,7 @@ namespace web
         InternalServerError = 500,
     };
 
-    enum class FileType {
-        HTML, 
-        CSS,
-        JS,
-        JPG, 
-        PNG,
-        INVALID
-    };
+    enum class FileType { HTML, CSS, JS, JPG, PNG, INVALID };
 
     struct HTTPResponse {
         HTTPVersion _version;
@@ -79,9 +54,12 @@ namespace web
         std::string ToString() {
             std::string result = "";
             const std::string CLRF = "\r\n";
-            std::string version = _version == HTTPVersion::HTTP1_1 ? "HTTP/1.1" : "HTTP/1.0";
-            std::string message{ magic_enum::enum_name(_statusCode) };
-            result = version + " " + std::to_string(static_cast<int>(_statusCode)) + " " + message + CLRF;
+            std::string version =
+                _version == HTTPVersion::HTTP1_1 ? "HTTP/1.1" : "HTTP/1.0";
+            std::string message{magic_enum::enum_name(_statusCode)};
+            result = version + " " +
+                     std::to_string(static_cast<int>(_statusCode)) + " " +
+                     message + CLRF;
             std::string headers = "";
             if (!_body.empty()) {
                 _headers["Content-Length"] = std::to_string(_body.size());
@@ -97,4 +75,4 @@ namespace web
             return result;
         }
     };
-}
+}  // namespace web
