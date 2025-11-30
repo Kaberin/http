@@ -16,19 +16,5 @@ jobs:
             cd build
             cmake ../
             cmake --build . --config RelWithDebInfo
-
-  # build-windows:
-  #   runs-on: windows-latest
-
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v3
-      
-  #     - name: Run cmake
-  #       run: |
-  #           mkdir build
-  #           cd build
-  #           cmake ../
-  #           cmake --build . --config RelWithDebInfo
        
      

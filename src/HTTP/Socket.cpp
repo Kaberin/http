@@ -5,34 +5,36 @@
 #include "../Utils.hpp"
 #include "HTTPReader.hpp"
 #include "Logger/Logger.hpp"
-namespace web {
+namespace web
+{
     std::chrono::seconds Socket::_idleTtimer =
         std::chrono::seconds(DefaultValues::IDLE_TIMEOUT);
 
-    Socket::Socket(int iServerPort, SocketType iSocketType, int backlog) {
-        // std::cout << "Server socket constructor...\n";
+    Socket::Socket(int iServerPort, SocketType iSocketType, int backlog)
+    {
         _socketType = SocketType::Server;
         sockaddr_in addr;
         addr.sin_addr.s_addr = INADDR_ANY;
         addr.sin_port = htons(iServerPort);
         addr.sin_family = AF_INET;
         _socket = socket(AF_INET, SOCK_STREAM, 0);
-        bind(_socket, reinterpret_cast<sockaddr*>(&addr), sizeof(addr));
+        bind(_socket, reinterpret_cast<sockaddr *>(&addr), sizeof(addr));
         listen(_socket, backlog);
     }
 
     Socket::Socket(socket_t iRawSocket, SocketType iSocketType)
-        : _socket{iRawSocket}, _socketType{iSocketType} {
-        // std::cout << "Client socket constructor...\n";
-    }
+        : _socket{iRawSocket}, _socketType{iSocketType} {}
 
-    Socket::Socket(Socket&& iSocket) noexcept
-        : _socket{iSocket._socket}, _socketType{iSocket._socketType} {
+    Socket::Socket(Socket &&iSocket) noexcept
+        : _socket{iSocket._socket}, _socketType{iSocket._socketType}
+    {
         iSocket._socket = INVALID_SOCKET;
     }
 
-    Socket& Socket::operator=(Socket&& iSocket) noexcept {
-        if (_socket != INVALID_SOCKET) {
+    Socket &Socket::operator=(Socket &&iSocket) noexcept
+    {
+        if (_socket != INVALID_SOCKET)
+        {
             close(_socket);
         }
         _socket = iSocket._socket;
@@ -41,41 +43,50 @@ namespace web {
         return *this;
     };
 
-    Socket::~Socket() {
-        if (_socket != INVALID_SOCKET) {
-            std::cout << "Closing socket " << _socket << '\n';
+    Socket::~Socket()
+    {
+        if (_socket != INVALID_SOCKET)
+        {
+            Logger::GetInstance().Log(
+                LogType::INFO, "Closing socket " + std::to_string(_socket));
             close(_socket);
         }
     }
 
     socket_t Socket::GetRawSocket() const { return _socket; }
 
-    void Socket::PutBack(const std::string& iPutback) const {
+    void Socket::PutBack(const std::string &iPutback) const
+    {
         _buffer = iPutback + _buffer;
     }
 
-    std::string Socket::Read(size_t bytes) const {
+    std::string Socket::Read(size_t bytes) const
+    {
         int bytesToRead = bytes;
         char buf[1024];
 
         int readBytes = 0;
         std::string result;
 
-        if (!_buffer.empty()) {
+        if (!_buffer.empty())
+        {
             size_t take = (std::min)(bytes, _buffer.size());
             result += _buffer.substr(0, take);
             _buffer.erase(0, take);
             bytesToRead -= take;
         }
 
-        while (bytesToRead > 0) {
+        while (bytesToRead > 0)
+        {
             readBytes =
                 recv(_socket, buf,
                      (std::min)(bytesToRead, static_cast<int>(sizeof(buf))), 0);
-            if (readBytes == 0) {
+            if (readBytes == 0)
+            {
                 break;
             }
-            if (readBytes < 0) {
+            if (readBytes < 0)
+            {
                 ProcessException();
             }
             result.append(buf, readBytes);
@@ -84,31 +95,38 @@ namespace web {
         return result;
     }
 
-    std::string Socket::Read(const std::string& iStopMark) const {
+    std::string Socket::Read(const std::string &iStopMark) const
+    {
         char buf[1024];
         int readBytes = 0;
         std::string result;
         auto last_activity = Clock::now();
-        while (true) {
+        while (true)
+        {
             auto stopMarkPos = _buffer.find(iStopMark);
-            if (stopMarkPos != std::string::npos) {
+            if (stopMarkPos != std::string::npos)
+            {
                 result += _buffer.substr(0, stopMarkPos);
                 _buffer.erase(0, stopMarkPos + iStopMark.size());
                 return result;
             }
-            if (!HasData()) {
+            if (!HasData())
+            {
                 auto now = Clock::now();
-                if (now - last_activity >= _idleTtimer) {
+                if (now - last_activity >= _idleTtimer)
+                {
                     throw exceptions::IdleTimeout();
                 }
                 continue;
             }
             readBytes = recv(_socket, buf, sizeof(buf), 0);
 
-            if (readBytes == 0) {
+            if (readBytes == 0)
+            {
                 break;
             }
-            if (readBytes < 0) {
+            if (readBytes < 0)
+            {
                 ProcessException();
             }
 
@@ -118,13 +136,16 @@ namespace web {
         return result;
     }
 
-    bool Socket::Send(std::string iString) const {
+    bool Socket::Send(std::string iString) const
+    {
         int bytesToSend = iString.size();
         int sent = 0;
         auto data = iString.c_str();
-        while (bytesToSend > 0) {
+        while (bytesToSend > 0)
+        {
             int res = send(_socket, data + sent, bytesToSend - sent, 0);
-            if (res <= 0) {
+            if (res <= 0)
+            {
                 return false;
             }
             sent += res;
@@ -132,18 +153,20 @@ namespace web {
         return true;
     }
 
-    std::optional<Socket> Socket::AcceptConnection() {
-        if (_socketType == SocketType::Server) {
+    std::optional<Socket> Socket::AcceptConnection()
+    {
+        if (_socketType == SocketType::Server)
+        {
             socket_t rawSocket = accept(_socket, nullptr, nullptr);
             struct timeval tv;
             tv.tv_sec = DefaultValues::SOCKET_TIMEOUT;
             tv.tv_usec = 0;
             setsockopt(rawSocket, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
             std::string logMessage =
-                "Accepted connection: Socket: " + std::to_string(rawSocket) +
-                '\n';
+                "Accepted connection: Socket: " + std::to_string(rawSocket);
             Logger::GetInstance().Log(LogType::INFO, logMessage);
-            if (rawSocket == INVALID_SOCKET) {
+            if (rawSocket == INVALID_SOCKET)
+            {
                 return std::nullopt;
             }
             return std::optional<Socket>(Socket(rawSocket, SocketType::Client));
@@ -151,17 +174,22 @@ namespace web {
         return std::nullopt;
     }
 
-    std::optional<HTTPRequest> Socket::GetHTTPRequest() {
-        if (_socketType == SocketType::Client) {
+    std::optional<HTTPRequest> Socket::GetHTTPRequest()
+    {
+        if (_socketType == SocketType::Client)
+        {
             HTTPReader reader;
             return reader.ReadHTTPRequest(*this);
-        } else {
+        }
+        else
+        {
             throw std::runtime_error{
                 "Only client sockets can get http requests!"};
         }
     }
 
-    bool Socket::HasData() const {
+    bool Socket::HasData() const
+    {
         fd_set readfds;
         FD_ZERO(&readfds);
         FD_SET(_socket, &readfds);
@@ -172,15 +200,18 @@ namespace web {
 
         int ret = select(_socket + 1, &readfds, nullptr, nullptr, &tv);
 
-        if (ret < 0) return false;
+        if (ret < 0)
+            return false;
 
         return FD_ISSET(_socket, &readfds);
     }
 
-    void Socket::ProcessException() const {
-        if (errno == EAGAIN || errno == EWOULDBLOCK) {
+    void Socket::ProcessException() const
+    {
+        if (errno == EAGAIN || errno == EWOULDBLOCK)
+        {
             throw exceptions::SocketTimeout();
         }
         throw exceptions::SocketError();
     }
-}  // namespace web
+} // namespace web
